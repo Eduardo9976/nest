@@ -1,0 +1,74 @@
+@baseUrl = http://localhost:3000/api
+
+### App AppTest
+
+#@name RecadosTest
+# GET All Recados
+###
+GET {{baseUrl}}/recados
+    ?offset=0
+    &limit=2
+
+#GET Recado
+###
+GET {{baseUrl}}/recados/1
+
+# POST create Recado
+###
+POST {{baseUrl}}/recados
+Content-Type: application/json
+
+{
+  "deId": 1,
+  "paraId": 1,
+  "texto": "Oi, tudo bem?"
+}
+
+###
+PATCH {{baseUrl}}/recados/2
+Content-Type: application/json
+
+{
+  "texto": "Oi, tudo bem mesmo né?"
+}
+
+###
+DELETE {{baseUrl}}/recados/1111
+
+```
+
+#@name PessoaTest
+# GET All Pessoas
+
+###
+GET {{baseUrl}}/pessoas
+    ?offset=0
+    &limit=2
+
+#GET Pessoa
+###
+GET {{baseUrl}}/pessoas/2
+
+# POST create Pessoa
+###
+POST {{baseUrl}}/pessoas
+Content-Type: application/json
+
+{
+  "nome": "Fulano",
+  "email": "email@mail.com",
+  "password": "123@abc"
+}
+
+###
+PATCH {{baseUrl}}/pessoas/1
+Content-Type: application/json
+
+{
+  "nome": "Ciclano"
+}
+
+###
+DELETE {{baseUrl}}/pessoas/1
+```
+
