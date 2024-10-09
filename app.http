@@ -44,6 +44,7 @@ DELETE {{baseUrl}}/recados/1111
 GET {{baseUrl}}/pessoas
     ?offset=0
     &limit=2
+Authorization: Bearer 123456
 
 #GET Pessoa
 ###

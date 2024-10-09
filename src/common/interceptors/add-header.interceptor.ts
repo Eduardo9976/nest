@@ -1,5 +1,6 @@
-import {CallHandler, ExecutionContext, NestInterceptor} from "@nestjs/common";
+import {CallHandler, ExecutionContext, Injectable, NestInterceptor} from "@nestjs/common";
 
+@Injectable()
 export class AddHeaderInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler) {

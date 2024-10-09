@@ -1,11 +1,12 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors} from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors, Req} from '@nestjs/common';
 import {PessoasService} from './pessoas.service';
 import {CreatePessoaDto} from './dto/create-pessoa.dto';
 import {UpdatePessoaDto} from './dto/update-pessoa.dto';
 import {SimpleCacheInterceptor} from "../common/interceptors/simple-cache.interceptor";
 import {ChangeDataInterceptor} from "../common/interceptors/change-data.interceptor";
+import {AuthTokenInterceptor} from "../common/interceptors/auth-token.interceptor";
 
-@UseInterceptors(SimpleCacheInterceptor, ChangeDataInterceptor)
+@UseInterceptors(AuthTokenInterceptor, SimpleCacheInterceptor, ChangeDataInterceptor)
 @Controller('pessoas')
 export class PessoasController {
     constructor(private readonly pessoasService: PessoasService) {
@@ -16,8 +17,10 @@ export class PessoasController {
         return this.pessoasService.create(createPessoaDto);
     }
 
+    // @UseInterceptors(AuthTokenInterceptor)
     @Get()
-    findAll() {
+    findAll( @Req() req: Request) {
+        console.log('User:', req['user']);
         return this.pessoasService.findAll();
     }
 

@@ -1,7 +1,8 @@
-import {CallHandler, ExecutionContext, NestInterceptor} from "@nestjs/common";
+import {CallHandler, ExecutionContext, Injectable, NestInterceptor} from "@nestjs/common";
 import {map} from "rxjs";
 
 // nem estou usando, só exemplo mesmo.
+@Injectable()
 export class ChangeDataInterceptor implements NestInterceptor {
     async intercept(context: ExecutionContext, next: CallHandler<any>) {
         return next.handle().pipe(

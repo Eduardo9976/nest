@@ -2,7 +2,7 @@ import {
     Body,
     Controller,
     Delete,
-    Get,
+    Get, Inject,
     Param,
     ParseIntPipe,
     Patch,
@@ -19,16 +19,33 @@ import {ParseIntIdPipe} from "../common/pipes/parse-int-id.pipe";
 import {AddHeaderInterceptor} from "../common/interceptors/add-header.interceptor";
 import {TimingConnectionInterceptor} from "../common/interceptors/timing-connection.interceptor";
 import {ErrorHandlingInterceptor} from "../common/interceptors/error-handling.interceptor";
+import {ReqDataParam} from "../common/params/req-data-param.decorator";
+import {RegexProtocol} from "../common/regex/regex.protocol";
+import {ONLY_LOWERCASE_LETTERS_REGEX} from "./recados.constats";
+import {MY_DYNAMIC_CONFIG, MyDynamicModuleConfigs} from "../my-dynamic/my-dynamic.module";
 
 @Controller('recados')
 @UseInterceptors(AddHeaderInterceptor) // ou usar no método ou lá no global
 export class RecadosController {
-    constructor(private readonly recadosService: RecadosService) {
+    constructor(
+        private readonly recadosService: RecadosService,
+        // recebendo a injeção de dependência
+        private readonly regexProtocol: RegexProtocol,
+
+        @Inject(ONLY_LOWERCASE_LETTERS_REGEX)
+        private readonly removeSpacesRegex: RegexProtocol,
+
+        @Inject(MY_DYNAMIC_CONFIG)
+        private readonly myDynamicConfig: MyDynamicModuleConfigs
+    ) {
     }
 
     @UseInterceptors(TimingConnectionInterceptor)
     @Get()
     async findAll(@Query() paginationDto: PaginationDto) {
+        console.log(this.regexProtocol.execute('Teste de Regex'))
+        console.log(this.removeSpacesRegex.execute('Teste de Regex'))
+        console.log('injetado do modulo dinamico', this.myDynamicConfig)
         return await this.recadosService.findAll(paginationDto);
     }
 
@@ -37,7 +54,11 @@ export class RecadosController {
     @Get(':id')
     @UsePipes(ParseIntIdPipe) // poderia colocar direto na classe para usar para todos
     // async findOne(@Param('id', ParseIntPipe) id: number) {
-    async findOne(@Param('id', ParseIntPipe) id: number) {
+    async findOne(
+        @Param('id', ParseIntPipe) id: number,
+        // aquele data do decorator é o que passo no decorator @UrlParam('data')
+        @ReqDataParam('url') url: string) {
+        console.log(url, 'pelo custom decorator');
         return await this.recadosService.findOne(id);
     }
 
