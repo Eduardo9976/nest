@@ -7,18 +7,32 @@ import {PessoasModule} from "../pessoas/pessoas.module";
 import {SimpleMiddleware} from "../common/middlewares/simple.middleware";
 import {MyExceptionFilter} from "../common/filters/my-exception.filter";
 import {IsAdminGuard} from "../common/guards/is-admin.guard";
+import {ConfigModule} from "@nestjs/config";
+import * as Joi from '@hapi/joi';
 
 @Module({
     imports: [
+        ConfigModule.forRoot({
+            validationSchema: Joi.object({ // não precisaria do joi, mas é uma boa prática
+                DATABASE_TYPE: Joi.string().required(),
+                DATABASE_HOST: Joi.string().required(),
+                DATABASE_PORT: Joi.number().required(),
+                DATABASE_USERNAME: Joi.string().required(),
+                DATABASE_DATABASE: Joi.string().required(),
+                DATABASE_PASSWORD: Joi.string().required(),
+                DATABASE_AUTOLOADENTITIES: Joi.number().required().min(0).max(1).default(0),
+                DATABASE_SYNCHRONIZE: Joi.number().required().min(0).max(1).default(0)
+            })
+        }), // posso ter configuracoes por exemplo envFilePath: '.env.development' ou ignoreEnvFile: true
         TypeOrmModule.forRoot({
-            type: 'postgres',
-            host: '127.0.0.1',
-            port: 5432,
-            username: 'postgres',
-            password: 'postgres',
-            database: 'postgres',
-            autoLoadEntities: true, // carrega as entidades automaticamente do diretório entities
-            synchronize: true, // cria as tabelas automaticamente, não usar em produção
+            type: process.env.DATABASE_TYPE as 'postgres',
+            host: process.env.DATABASE_HOST,
+            port: +process.env.DATABASE_PORT,
+            username: process.env.DATABASE_USERNAME,
+            database: process.env.DATABASE_DATABASE,
+            password: process.env.DATABASE_PASSWORD,
+            autoLoadEntities: Boolean(process.env.DATABASE_AUTOLOADENTITIES), // Carrega entidades sem precisar especifica-las
+            synchronize: Boolean(process.env.DATABASE_SYNCHRONIZE), // Sincroniza com o BD. Não deve ser usado em produção
         }),
         RecadosModule,
         PessoasModule
@@ -40,7 +54,7 @@ import {IsAdminGuard} from "../common/guards/is-admin.guard";
 
 // só para testar o middleware que também poderia ser global
 export class AppModule implements NestModule {
-    configure(consumer:MiddlewareConsumer) {
+    configure(consumer: MiddlewareConsumer) {
         consumer.apply(SimpleMiddleware).forRoutes('*');
         // consumer.apply((req, res, next) => {
         //     console.log('Request...');

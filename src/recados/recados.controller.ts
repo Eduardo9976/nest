@@ -23,11 +23,14 @@ import {ReqDataParam} from "../common/params/req-data-param.decorator";
 import {RegexProtocol} from "../common/regex/regex.protocol";
 import {ONLY_LOWERCASE_LETTERS_REGEX} from "./recados.constats";
 import {MY_DYNAMIC_CONFIG, MyDynamicModuleConfigs} from "../my-dynamic/my-dynamic.module";
+import {ConfigService} from "@nestjs/config";
 
 @Controller('recados')
 @UseInterceptors(AddHeaderInterceptor) // ou usar no método ou lá no global
 export class RecadosController {
     constructor(
+        private readonly configService: ConfigService,
+
         private readonly recadosService: RecadosService,
         // recebendo a injeção de dependência
         private readonly regexProtocol: RegexProtocol,
@@ -43,6 +46,7 @@ export class RecadosController {
     @UseInterceptors(TimingConnectionInterceptor)
     @Get()
     async findAll(@Query() paginationDto: PaginationDto) {
+        console.log('usando var de ambientes pelo inject do module', this.configService.get('DATABASE_HOST'))
         console.log(this.regexProtocol.execute('Teste de Regex'))
         console.log(this.removeSpacesRegex.execute('Teste de Regex'))
         console.log('injetado do modulo dinamico', this.myDynamicConfig)
