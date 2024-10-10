@@ -10,10 +10,12 @@ import {IsAdminGuard} from "../common/guards/is-admin.guard";
 import {ConfigModule, ConfigService, ConfigType} from "@nestjs/config";
 import * as Joi from '@hapi/joi';
 import appConfig from "./app.config";
+import globalConfig from "../global-config/global.config";
+import {GlobalConfigModule} from "../global-config/global-config.module";
 
 @Module({
     imports: [
-        ConfigModule.forFeature(appConfig), // para usar o appConfig em outros módulos
+        // ConfigModule.forFeature(appConfig), // para usar o appConfig em outros módulos
         ConfigModule.forRoot({
             // load: [appConfig], // carregando configurações de um arquivo
 
@@ -56,19 +58,37 @@ import appConfig from "./app.config";
         //         };
         //     },
         // })
-        TypeOrmModule.forRootAsync({
-            imports: [ConfigModule.forFeature(appConfig)],
-            inject: [appConfig.KEY],
-            useFactory: async (appConfiguration: ConfigType<typeof appConfig>) => {
+        // TypeOrmModule.forRootAsync({
+        //     imports: [ConfigModule.forFeature(appConfig)],
+        //     inject: [appConfig.KEY],
+        //     useFactory: async (appConfiguration: ConfigType<typeof appConfig>) => {
+        //         return {
+        //             type: appConfiguration.database.type,
+        //             host: appConfiguration.database.host,
+        //             port: appConfiguration.database.port,
+        //             username: appConfiguration.database.username,
+        //             database: appConfiguration.database.database,
+        //             password: appConfiguration.database.password,
+        //             autoLoadEntities: appConfiguration.database.autoLoadEntities,
+        //             synchronize: appConfiguration.database.synchronize,
+        //         };
+        //     },
+        // }),
+        ConfigModule.forFeature(globalConfig),
+        GlobalConfigModule, // para usar o globalConfig em outros módulos
+        TypeOrmModule.forRootAsync({ // global config
+            imports: [ConfigModule.forFeature(globalConfig)],
+            inject: [globalConfig.KEY],
+            useFactory: async (globalConfiguration: ConfigType<typeof globalConfig>) => {
                 return {
-                    type: appConfiguration.database.type,
-                    host: appConfiguration.database.host,
-                    port: appConfiguration.database.port,
-                    username: appConfiguration.database.username,
-                    database: appConfiguration.database.database,
-                    password: appConfiguration.database.password,
-                    autoLoadEntities: appConfiguration.database.autoLoadEntities,
-                    synchronize: appConfiguration.database.synchronize,
+                    type: globalConfiguration.database.type,
+                    host: globalConfiguration.database.host,
+                    port: globalConfiguration.database.port,
+                    username: globalConfiguration.database.username,
+                    database: globalConfiguration.database.database,
+                    password: globalConfiguration.database.password,
+                    autoLoadEntities: globalConfiguration.database.autoLoadEntities,
+                    synchronize: globalConfiguration.database.synchronize,
                 };
             },
         }),
