@@ -11,6 +11,7 @@ import {ONLY_LOWERCASE_LETTERS_REGEX, REMOVE_SPACES_REGEX} from "./recados.const
 import {RegexFactory} from "../common/regex/regex.factory";
 import {MyDynamicModule} from "../my-dynamic/my-dynamic.module";
 import {ConfigModule} from "@nestjs/config";
+import recadosConfig from "./recados.config";
 
 @Module({
     controllers: [RecadosController],
@@ -48,7 +49,8 @@ import {ConfigModule} from "@nestjs/config";
         },
     ],
     imports: [
-        ConfigModule, // só se eu quiser usar as variáveis de ambiente no módulo
+        // ConfigModule, // só se eu quiser usar as variáveis de ambiente no módulo
+        ConfigModule.forFeature(recadosConfig), // só se eu quiser usar as variáveis de ambiente forFeature
         TypeOrmModule.forFeature([RecadoEntity]),
         PessoasModule,
 

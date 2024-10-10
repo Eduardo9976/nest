@@ -7,14 +7,15 @@ import {PessoasModule} from "../pessoas/pessoas.module";
 import {SimpleMiddleware} from "../common/middlewares/simple.middleware";
 import {MyExceptionFilter} from "../common/filters/my-exception.filter";
 import {IsAdminGuard} from "../common/guards/is-admin.guard";
-import {ConfigModule, ConfigService} from "@nestjs/config";
+import {ConfigModule, ConfigService, ConfigType} from "@nestjs/config";
 import * as Joi from '@hapi/joi';
 import appConfig from "./app.config";
 
 @Module({
     imports: [
+        ConfigModule.forFeature(appConfig), // para usar o appConfig em outros módulos
         ConfigModule.forRoot({
-            load: [appConfig], // carregando configurações de um arquivo
+            // load: [appConfig], // carregando configurações de um arquivo
 
             validationSchema: Joi.object({ // não precisaria do joi, mas é uma boa prática
                 DATABASE_TYPE: Joi.string().required(),
@@ -37,21 +38,37 @@ import appConfig from "./app.config";
         //     autoLoadEntities: Boolean(process.env.DATABASE_AUTOLOADENTITIES), // Carrega entidades sem precisar especifica-las
         //     synchronize: Boolean(process.env.DATABASE_SYNCHRONIZE), // Sincroniza com o BD. Não deve ser usado em produção
         // }),
+        // TypeOrmModule.forRootAsync({
+        //     imports: [ConfigModule],
+        //     inject: [ConfigService],
+        //     useFactory: async (configService: ConfigService) => {
+        //         return {
+        //             type: configService.get<'postgres'>('database.type'),
+        //             host: configService.get<string>('database.host'),
+        //             port: configService.get<number>('database.port'),
+        //             username: configService.get<string>('database.username'),
+        //             database: configService.get<string>('database.database'),
+        //             password: configService.get<string>('database.password'),
+        //             autoLoadEntities: configService.get<boolean>(
+        //                 'database.autoLoadEntities',
+        //             ),
+        //             synchronize: configService.get<boolean>('database.synchronize'),
+        //         };
+        //     },
+        // })
         TypeOrmModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => {
+            imports: [ConfigModule.forFeature(appConfig)],
+            inject: [appConfig.KEY],
+            useFactory: async (appConfiguration: ConfigType<typeof appConfig>) => {
                 return {
-                    type: configService.get<'postgres'>('database.type'),
-                    host: configService.get<string>('database.host'),
-                    port: configService.get<number>('database.port'),
-                    username: configService.get<string>('database.username'),
-                    database: configService.get<string>('database.database'),
-                    password: configService.get<string>('database.password'),
-                    autoLoadEntities: configService.get<boolean>(
-                        'database.autoLoadEntities',
-                    ),
-                    synchronize: configService.get<boolean>('database.synchronize'),
+                    type: appConfiguration.database.type,
+                    host: appConfiguration.database.host,
+                    port: appConfiguration.database.port,
+                    username: appConfiguration.database.username,
+                    database: appConfiguration.database.database,
+                    password: appConfiguration.database.password,
+                    autoLoadEntities: appConfiguration.database.autoLoadEntities,
+                    synchronize: appConfiguration.database.synchronize,
                 };
             },
         }),
