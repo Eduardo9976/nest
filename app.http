@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3000/api
-
+@Authorization = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjksImVtYWlsIjoiZW1haWwxMUBtYWlsLmNvbSIsImlhdCI6MTcyODkzNzQzMCwiZXhwIjoxNzI4OTQxMDMwLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAifQ.aH25BZD71HZqWqrY65y0LTr_xgEFio0fVfQvtiRyQdU"
 ### App AppTest
 
 #@name RecadosTest
@@ -8,15 +8,18 @@
 GET {{baseUrl}}/recados
     ?offset=0
     &limit=2
+Authorization: {{Authorization}}
 
 #GET Recado
 ###
 GET {{baseUrl}}/recados/1
+Authorization: {{Authorization}}
 
 # POST create Recado
 ###
 POST {{baseUrl}}/recados
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
   "deId": 1,
@@ -27,6 +30,7 @@ Content-Type: application/json
 ###
 PATCH {{baseUrl}}/recados/2
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
   "texto": "Oi, tudo bem mesmo né?"
@@ -34,6 +38,7 @@ Content-Type: application/json
 
 ###
 DELETE {{baseUrl}}/recados/1111
+Authorization: {{Authorization}}
 
 ```
 
@@ -44,32 +49,50 @@ DELETE {{baseUrl}}/recados/1111
 GET {{baseUrl}}/pessoas
     ?offset=0
     &limit=2
-Authorization: Bearer 123456
+Authorization: {{Authorization}}
 
 #GET Pessoa
 ###
 GET {{baseUrl}}/pessoas/2
+Authorization: {{Authorization}}
 
 # POST create Pessoa
 ###
 POST {{baseUrl}}/pessoas
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
   "nome": "Fulano",
-  "email": "email@mail.com",
+  "email": "email11a@mail.com",
   "password": "123@abc"
 }
 
 ###
-PATCH {{baseUrl}}/pessoas/1
+PATCH {{baseUrl}}/pessoas/9
 Content-Type: application/json
+Authorization: {{Authorization}}
 
 {
-  "nome": "Ciclano"
+  "nome": "Ciclano",
+  "password": "123@9976"
 }
 
 ###
 DELETE {{baseUrl}}/pessoas/1
+Authorization: {{Authorization}}
+
+
 ```
+
+#Auth
+
+### Auth
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "email11@mail.com",
+  "password": "123@9976"
+}
 

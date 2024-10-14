@@ -12,6 +12,7 @@ import * as Joi from '@hapi/joi';
 import appConfig from "./app.config";
 import globalConfig from "../global-config/global.config";
 import {GlobalConfigModule} from "../global-config/global-config.module";
+import {AuthModule} from "../auth/auth.module";
 
 @Module({
     imports: [
@@ -93,19 +94,20 @@ import {GlobalConfigModule} from "../global-config/global-config.module";
             },
         }),
         RecadosModule,
-        PessoasModule
+        PessoasModule,
+        AuthModule
     ],
     controllers: [AppController],
     providers: [
         AppService,
-        {
-            provide: 'APP_FILTER',
-            useClass: MyExceptionFilter
-        },
-        { // também poderia usar por rota ou controller
-            provide: 'APP_GUARD',
-            useClass: IsAdminGuard
-        }
+        // {
+        //     provide: 'APP_FILTER',
+        //     useClass: MyExceptionFilter
+        // },
+        // { // também poderia usar por rota ou controller
+        //     provide: 'APP_GUARD',
+        //     useClass: IsAdminGuard
+        // }
     ],
 })
 // export class AppModule {}
