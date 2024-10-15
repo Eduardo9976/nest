@@ -2,9 +2,6 @@ import {IsBoolean, IsNotEmpty, IsOptional, IsPositive, IsString, MinLength,} fro
 
 export class CreateRecadoDto {
     @IsPositive()
-    deId: number;
-
-    @IsPositive()
     paraId: number;
 
     @IsString()

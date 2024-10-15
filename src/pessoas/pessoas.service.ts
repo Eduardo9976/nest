@@ -6,6 +6,7 @@ import {PessoaEntity} from "./entities/pessoa.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {async} from "rxjs";
 import {HashingService} from "../auth/hashing/hashing.service";
+import {TokenPayloadDto} from "../auth/dto/token-payload.dto";
 
 @Injectable()
 export class PessoasService {
@@ -50,16 +51,16 @@ export class PessoasService {
     }
 
     async findOne(id: number) {
-        const pesssoa = this.pessoaRepository.findOne({
+        const pessoa = this.pessoaRepository.findOne({
             where: {id}
         })
 
-        if (pesssoa) return pesssoa;
+        if (pessoa) return pessoa;
 
         throw new NotFoundException('Pessoa não encontrada');
     }
 
-    async update(id: number, updatePessoaDto: UpdatePessoaDto) {
+    async update(id: number, updatePessoaDto: UpdatePessoaDto, tokenPayload: TokenPayloadDto) {
         const partialPessoaDto = {
             nome: updatePessoaDto?.nome
         }
@@ -75,17 +76,21 @@ export class PessoasService {
 
         if (!pessoa) throw new NotFoundException('Pessoa não encontrada');
 
+        if (pessoa.id !== tokenPayload.sub) throw new NotFoundException('Você não é essa pessoa');
+
         const { passwordHash, ...updatedPessoa } = await this.pessoaRepository.save(pessoa);
 
         return updatedPessoa;
     }
 
-    async remove(id: number) {
-        const pesssoa = await this.pessoaRepository.findOne({
+    async remove(id: number, tokenPayload: TokenPayloadDto) {
+        const pessoa = await this.pessoaRepository.findOne({
             where: {id}
         })
 
-        if (pesssoa) return await this.pessoaRepository.remove(pesssoa);
+        if (pessoa.id !== tokenPayload.sub) throw new NotFoundException('Você não é essa pessoa');
+
+        if (pessoa) return await this.pessoaRepository.remove(pessoa);
 
         throw new NotFoundException('Pessoa não encontrada');
     }

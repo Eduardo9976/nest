@@ -7,7 +7,7 @@ import {
     ParseIntPipe,
     Patch,
     Post,
-    Query,
+    Query, UseGuards,
     UseInterceptors,
     UsePipes
 } from '@nestjs/common';
@@ -25,9 +25,13 @@ import {ONLY_LOWERCASE_LETTERS_REGEX} from "./recados.constats";
 import {MY_DYNAMIC_CONFIG, MyDynamicModuleConfigs} from "../my-dynamic/my-dynamic.module";
 import {ConfigService, ConfigType} from "@nestjs/config";
 import recadosConfig from "./recados.config";
+import {AuthTokenGuard} from "../auth/guards/auth-token.guard";
+import {TokenPayloadParam} from "../auth/params/token-payload.param";
+import {TokenPayloadDto} from "../auth/dto/token-payload.dto";
 
 @Controller('recados')
 @UseInterceptors(AddHeaderInterceptor) // ou usar no método ou lá no global
+@UseGuards(AuthTokenGuard)
 export class RecadosController {
     constructor(
         // private readonly configService: ConfigService, // para pegar variáveis de ambiente global
@@ -58,8 +62,8 @@ export class RecadosController {
         return await this.recadosService.findAll(paginationDto);
     }
 
-    // usando parse int pipe para garantir que o id seja um número mas posso transfomar direto no main.ts com o ValidationPipe/ mas direto na validation o transform, pode causar uma perca de performance(transforma todos os campos uma estancia caso tenha a classe dto)
-    // assim tenho ganho de performance e lança na resposta um erro caso não seja um número
+    // usando parse int pipe para garantir que o ‘id’ seja um número, mas posso transfomar direto no main.ts com o ValidationPipe/, mas direto na validation o transform, pode causar uma perca de performance(transforma todos os campos uma estancia caso tenha a classe dto)
+    // assim tenho ganho de desempenho e lança um erro caso na resposta não seja um número
     @Get(':id')
     @UsePipes(ParseIntIdPipe) // poderia colocar direto na classe para usar para todos
     // async findOne(@Param('id', ParseIntPipe) id: number) {
@@ -73,18 +77,28 @@ export class RecadosController {
 
     // @HttpCode(HttpStatus.CREATED)
     @Post()
-    async create(@Body() createRecadoDto: CreateRecadoDto) {
-        return await this.recadosService.create(createRecadoDto);
+    async create(
+        @Body() createRecadoDto: CreateRecadoDto,
+        @TokenPayloadParam() tokenPayload: TokenPayloadDto,
+    ) {
+        return await this.recadosService.create(createRecadoDto, tokenPayload);
     }
 
     @Patch(':id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body() updateRecadoDto: UpdateRecadoDto) {
-        return await this.recadosService.update(id, updateRecadoDto);
+    async update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updateRecadoDto: UpdateRecadoDto,
+        @TokenPayloadParam() tokenPayload: TokenPayloadDto,
+        ) {
+        return await this.recadosService.update(id, updateRecadoDto, tokenPayload);
     }
 
     @UseInterceptors(AddHeaderInterceptor, ErrorHandlingInterceptor)
     @Delete(':id')
-    async remove(@Param('id', ParseIntPipe) id: number) {
-        return await this.recadosService.remove(id);
+    async remove(
+        @Param('id', ParseIntPipe) id: number,
+        @TokenPayloadParam() tokenPayload: TokenPayloadDto,
+    ) {
+        return await this.recadosService.remove(id, tokenPayload);
     }
 }

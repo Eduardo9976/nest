@@ -1,5 +1,17 @@
 @baseUrl = http://localhost:3000/api
-@Authorization = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjksImVtYWlsIjoiZW1haWwxMUBtYWlsLmNvbSIsImlhdCI6MTcyODkzNzQzMCwiZXhwIjoxNzI4OTQxMDMwLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAifQ.aH25BZD71HZqWqrY65y0LTr_xgEFio0fVfQvtiRyQdU"
+
+#Auth
+
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "email11@mail.com",
+  "password": "123@9976"
+}
+
+> {% client.global.set("authToken", response.body.accessToken); %}
+
 ### App AppTest
 
 #@name RecadosTest
@@ -8,21 +20,20 @@
 GET {{baseUrl}}/recados
     ?offset=0
     &limit=2
-Authorization: {{Authorization}}
+Authorization: Bearer {{authToken}}
 
 #GET Recado
 ###
 GET {{baseUrl}}/recados/1
-Authorization: {{Authorization}}
+Authorization: Bearer {{authToken}}
 
 # POST create Recado
 ###
 POST {{baseUrl}}/recados
 Content-Type: application/json
-Authorization: {{Authorization}}
+Authorization: Bearer {{authToken}}
 
 {
-  "deId": 1,
   "paraId": 1,
   "texto": "Oi, tudo bem?"
 }
@@ -30,15 +41,15 @@ Authorization: {{Authorization}}
 ###
 PATCH {{baseUrl}}/recados/2
 Content-Type: application/json
-Authorization: {{Authorization}}
+Authorization: Bearer {{authToken}}
 
 {
   "texto": "Oi, tudo bem mesmo né?"
 }
 
 ###
-DELETE {{baseUrl}}/recados/1111
-Authorization: {{Authorization}}
+DELETE {{baseUrl}}/recados/10
+Authorization: Bearer {{authToken}}
 
 ```
 
@@ -49,18 +60,18 @@ Authorization: {{Authorization}}
 GET {{baseUrl}}/pessoas
     ?offset=0
     &limit=2
-Authorization: {{Authorization}}
+Authorization: Bearer {{authToken}}
 
 #GET Pessoa
 ###
 GET {{baseUrl}}/pessoas/2
-Authorization: {{Authorization}}
+Authorization: Bearer {{authToken}}
 
 # POST create Pessoa
 ###
 POST {{baseUrl}}/pessoas
 Content-Type: application/json
-Authorization: {{Authorization}}
+Authorization: Bearer {{authToken}}
 
 {
   "nome": "Fulano",
@@ -71,7 +82,7 @@ Authorization: {{Authorization}}
 ###
 PATCH {{baseUrl}}/pessoas/9
 Content-Type: application/json
-Authorization: {{Authorization}}
+Authorization: Bearer {{authToken}}
 
 {
   "nome": "Ciclano",
@@ -80,19 +91,7 @@ Authorization: {{Authorization}}
 
 ###
 DELETE {{baseUrl}}/pessoas/1
-Authorization: {{Authorization}}
+Authorization: Bearer {{authToken}}
 
 
 ```
-
-#Auth
-
-### Auth
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-  "email": "email11@mail.com",
-  "password": "123@9976"
-}
-

@@ -18,6 +18,8 @@ import {SimpleCacheInterceptor} from "../common/interceptors/simple-cache.interc
 import {ChangeDataInterceptor} from "../common/interceptors/change-data.interceptor";
 import {AuthTokenInterceptor} from "../common/interceptors/auth-token.interceptor";
 import {AuthTokenGuard} from "../auth/guards/auth-token.guard";
+import {TokenPayloadDto} from "../auth/dto/token-payload.dto";
+import {TokenPayloadParam} from "../auth/params/token-payload.param";
 
 // @UseInterceptors(AuthTokenInterceptor, SimpleCacheInterceptor, ChangeDataInterceptor)
 @Controller('pessoas')
@@ -44,12 +46,19 @@ export class PessoasController {
     }
 
     @Patch(':id')
-    update(@Param('id', ParseIntPipe) id: number, @Body() updatePessoaDto: UpdatePessoaDto) {
-        return this.pessoasService.update(id, updatePessoaDto);
+    update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() updatePessoaDto: UpdatePessoaDto,
+        @TokenPayloadParam() tokenPayload: TokenPayloadDto,
+    ) {
+        return this.pessoasService.update(id, updatePessoaDto, tokenPayload);
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number) {
-        return this.pessoasService.remove(id);
+    remove(
+        @Param('id', ParseIntPipe) id: number,
+        @TokenPayloadParam() tokenPayload: TokenPayloadDto
+    ) {
+        return this.pessoasService.remove(id, tokenPayload);
     }
 }
