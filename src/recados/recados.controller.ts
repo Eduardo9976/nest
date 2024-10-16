@@ -2,16 +2,18 @@ import {
     Body,
     Controller,
     Delete,
-    Get, Inject,
+    Get,
+    Inject,
     Param,
     ParseIntPipe,
     Patch,
     Post,
-    Query, UseGuards,
+    Query,
+    UseGuards,
     UseInterceptors,
     UsePipes
 } from '@nestjs/common';
-import { RecadosService } from './recados.service';
+import {RecadosService} from './recados.service';
 import {UpdateRecadoDto} from "./dto/update-recado.dto";
 import {CreateRecadoDto} from "./dto/create-recado.dto";
 import {PaginationDto} from "../common/dto/pagination.dto";
@@ -23,29 +25,30 @@ import {ReqDataParam} from "../common/params/req-data-param.decorator";
 import {RegexProtocol} from "../common/regex/regex.protocol";
 import {ONLY_LOWERCASE_LETTERS_REGEX} from "./recados.constats";
 import {MY_DYNAMIC_CONFIG, MyDynamicModuleConfigs} from "../my-dynamic/my-dynamic.module";
-import {ConfigService, ConfigType} from "@nestjs/config";
+import {ConfigType} from "@nestjs/config";
 import recadosConfig from "./recados.config";
 import {AuthTokenGuard} from "../auth/guards/auth-token.guard";
 import {TokenPayloadParam} from "../auth/params/token-payload.param";
 import {TokenPayloadDto} from "../auth/dto/token-payload.dto";
+import {RoutePolicyGuard} from "../auth/guards/route-policy.guard";
+import {SetRoutePolicy} from "../auth/decorators/set-route-policy.decorator";
+import {RoutePolicies} from "../auth/enum/route-policies.enum";
 
 @Controller('recados')
 @UseInterceptors(AddHeaderInterceptor) // ou usar no método ou lá no global
 @UseGuards(AuthTokenGuard)
+@UseGuards(RoutePolicyGuard)
 export class RecadosController {
     constructor(
         // private readonly configService: ConfigService, // para pegar variáveis de ambiente global
 
         @Inject(recadosConfig.KEY) // para pegar variáveis de ambiente global
         private readonly recadosConfigurations: ConfigType<typeof recadosConfig>,
-
         private readonly recadosService: RecadosService,
         // recebendo a injeção de dependência
         private readonly regexProtocol: RegexProtocol,
-
         @Inject(ONLY_LOWERCASE_LETTERS_REGEX)
         private readonly removeSpacesRegex: RegexProtocol,
-
         @Inject(MY_DYNAMIC_CONFIG)
         private readonly myDynamicConfig: MyDynamicModuleConfigs
     ) {
@@ -53,6 +56,8 @@ export class RecadosController {
 
     @UseInterceptors(TimingConnectionInterceptor)
     @Get()
+    // @SetMetadata(ROUTE_POLICY_KEY, 'findAllRecados')
+    // @SetRoutePolicy(RoutePolicies.findAllRecados)
     async findAll(@Query() paginationDto: PaginationDto) {
         // console.log('usando var de ambientes pelo inject do module', this.configService.get('DATABASE_HOST'))
         console.log('configurações do recados', this.recadosConfigurations)
@@ -89,7 +94,7 @@ export class RecadosController {
         @Param('id', ParseIntPipe) id: number,
         @Body() updateRecadoDto: UpdateRecadoDto,
         @TokenPayloadParam() tokenPayload: TokenPayloadDto,
-        ) {
+    ) {
         return await this.recadosService.update(id, updateRecadoDto, tokenPayload);
     }
 

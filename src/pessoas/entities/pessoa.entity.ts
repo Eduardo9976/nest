@@ -1,6 +1,7 @@
 import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import {IsEmail} from "class-validator";
 import {RecadoEntity} from "../../recados/entities/recado.entity";
+import {RoutePolicies} from "../../auth/enum/route-policies.enum";
 
 @Entity('pessoa')
 export class PessoaEntity {
@@ -32,4 +33,10 @@ export class PessoaEntity {
     // Esses recados são relacionados ao campo "para" na entidade recado
     @OneToMany(() => RecadoEntity, recado => recado.para)
     recadosRecebidos: RecadoEntity[];
+
+    @Column({default: true})
+    active: boolean;
+
+    @Column({ type: 'simple-array', default: [] })
+    routePolicies: RoutePolicies[];
 }

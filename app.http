@@ -10,7 +10,17 @@ Content-Type: application/json
   "password": "123@9976"
 }
 
-> {% client.global.set("authToken", response.body.accessToken); %}
+> {% client.global.set("authToken", response.body.accessToken); client.global.set("refreshToken", response.body.refreshToken); %}
+
+### Re-Autenticação
+# @name reAuthenticate
+POST {{baseUrl}}/auth/refresh/
+Content-Type: application/json
+
+{
+    "refreshToken": "{{refreshToken}}"
+}
+
 
 ### App AppTest
 

@@ -18,7 +18,7 @@ import {JwtModule, JwtService} from "@nestjs/jwt";
         },
         AuthService
     ],
-    exports: [HashingService, JwtModule, ConfigModule],
+    exports: [HashingService, JwtModule, ConfigModule, TypeOrmModule],
     imports: [
         TypeOrmModule.forFeature([PessoaEntity]),
         ConfigModule.forFeature(JwtConfig),

@@ -1,4 +1,5 @@
-import {IsEmail, IsNotEmpty, IsString, IsStrongPassword, MaxLength, MinLength} from "class-validator";
+import {IsEmail, IsEnum, IsNotEmpty, IsString, IsStrongPassword, MaxLength, MinLength} from "class-validator";
+import {RoutePolicies} from "../../auth/enum/route-policies.enum";
 
 export class CreatePessoaDto {
     @IsEmail()
@@ -21,4 +22,7 @@ export class CreatePessoaDto {
     @MinLength(3)
     @MaxLength(100)
     nome: string;
+
+    // @IsEnum(RoutePolicies, {each: true})
+    // routePolicies: RoutePolicies[];
 }
